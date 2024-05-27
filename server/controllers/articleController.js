@@ -2,6 +2,8 @@ const axios = require('axios');
 const googleTrends = require('google-trends-api');
 const Article = require('../models/articleModel');
 const {Op} = require("sequelize");
+const fs = require('fs/promises');
+const path = require('path');
 
 let cachedResults = {
     topArticles: null,
@@ -208,11 +210,25 @@ async function exportData(req, res) {
     }
 }
 
+async function downloadData(req, res) {
+    try {
+        const data = req.body.articles_data;
+        const file_path = path.join(__dirname, '../articles.json');
+        fs.writeFile(file_path, JSON.stringify(data));
+        res.download(file_path, 'articles.json');
+    }
+    catch(err) {
+        console.log(err)
+    }
+    
+}
+
 module.exports = {
     getArticles,
     topArticles,
     top10Tags,
     topTags,
     exportData,
-    googleData
+    googleData,
+    downloadData
 };
