@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const userController = require('./controllers/userController');
 const userRouter = require('./routes/userRouter');
 const articleRouter = require('./routes/articleRouter');
 const db = require('./db');
@@ -32,7 +33,7 @@ const initApp = async () => {
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser());
         app.use('/api/users', userRouter);
-        app.use('/api/articles', articleRouter);
+        app.use('/api/articles', userController.tokenValidation, articleRouter);
 
         // Generowanie secret key
         process.env.SECRET_KEY = require('crypto').randomBytes(64).toString('hex');

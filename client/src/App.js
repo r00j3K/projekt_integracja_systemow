@@ -4,20 +4,17 @@ import Start from './components/Start';
 import Login from './components/Login';
 import Home from './components/Home';
 import Register from './components/Register';
-import Home2 from "./components/Home2";
+import  { ProtectedRoute } from './ProtectedRoute';
 import './App.css';
-import logo from './logo.svg';
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route exact path="/" element={<Start />} />
-                <Route exact path="/login" element={<Login />} />
-                <Route exact path="/home" element={<Home />} />
-                <Route exact path="/register" element={<Register />} />
-
-
+                <Route exact path="/"  element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Start />} />} />
+                <Route exact path="/login"  element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login />} />} />
+                <Route exact path="/home" element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login/>}/>} />
+                <Route exact path="/register" element={<ProtectedRoute elementIfAuthenticated={<Home/>} elementIfUnauthenticated={<Register/>}/>} />
             </Routes>
         </BrowserRouter>
     );

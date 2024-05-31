@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, Form, Container, Row, Col, Alert } from "react-bootstrap";
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -13,76 +14,67 @@ const Register = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try{
-            const response = await axios.post('http://localhost:8080/api/users/register',
+        try {
+            await axios.post('http://localhost:8080/api/users/register',
                 { name, surname, date_of_birth, email, password },
                 { withCredentials: true }
             );
 
             navigate('/login');
-
-        }catch (err){
-            setError(err.response.data.message || "Błąd serwera")
+        } catch (err) {
+            setError(err.response.data.message || "Błąd serwera");
         }
-    }
+    };
 
     return (
-        <div>
-            <h1> Wprowadź dane </h1>
-            <form onSubmit={handleSubmit}>
-                <table>
-                    <tr>
-                        <td>Podaj imię</td>
-                        <td>
-                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
-                                   placeholder="Imię"/>
-                        </td>
-                    </tr>
+        <Container className="mt-5">
+            <h1 className="mb-4 text-center">Wprowadź dane</h1>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group as={Row} className="mb-3" controlId="formName">
+                    <Form.Label column sm={2}>Podaj imię</Form.Label>
+                    <Col sm={10}>
+                        <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Imię" />
+                    </Col>
+                </Form.Group>
 
-                    <tr>
-                        <td>Podaj nazwisko</td>
-                        <td>
-                            <input type="text" value={surname} onChange={(e) => setSurname(e.target.value)} required
-                                   placeholder="Nazwisko"/>
-                        </td>
-                    </tr>
+                <Form.Group as={Row} className="mb-3" controlId="formSurname">
+                    <Form.Label column sm={2}>Podaj nazwisko</Form.Label>
+                    <Col sm={10}>
+                        <Form.Control type="text" value={surname} onChange={(e) => setSurname(e.target.value)} required placeholder="Nazwisko" />
+                    </Col>
+                </Form.Group>
 
-                    <tr>
-                        <td>Podaj rok urodzenia</td>
-                        <td>
-                            <input type="number" value={date_of_birth}
-                                   onChange={(e) => setDate_of_birth(e.target.value)}
-                                   required placeholder="Rok urodzenia"/>
-                        </td>
-                    </tr>
+                <Form.Group as={Row} className="mb-3" controlId="formDateOfBirth">
+                    <Form.Label column sm={2}>Podaj rok urodzenia</Form.Label>
+                    <Col sm={10}>
+                        <Form.Control type="number" value={date_of_birth} onChange={(e) => setDate_of_birth(e.target.value)} required placeholder="Rok urodzenia" />
+                    </Col>
+                </Form.Group>
 
-                    <tr>
-                        <td>Podaj email</td>
-                        <td>
-                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                                   placeholder='Email'/>
-                        </td>
-                    </tr>
+                <Form.Group as={Row} className="mb-3" controlId="formEmail">
+                    <Form.Label column sm={2}>Podaj email</Form.Label>
+                    <Col sm={10}>
+                        <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Email" />
+                    </Col>
+                </Form.Group>
 
-                    <tr>
-                        <td>Podaj haslo</td>
-                        <td>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                   required
-                                   placeholder='Password'/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colSpan={2}>
-                            <button type="submit"> Zarejestruj się </button>
-                        </td>
-                    </tr>
-                </table>
+                <Form.Group as={Row} className="mb-3" controlId="formPassword">
+                    <Form.Label column sm={2}>Podaj hasło</Form.Label>
+                    <Col sm={10}>
+                        <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Password" />
+                    </Col>
+                </Form.Group>
 
-            </form>
-            {error && <p>{error}</p>}
-        </div>
-    )
+                <div className="text-center"    >
+                    <Button type="submit" variant="primary" className="mx-2 my-2">Zarejestruj się</Button>
+                    <Link to="/login">
+                        <Button variant="secondary">Logowanie</Button>
+                    </Link>
+                </div>
+            </Form>
+            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+        </Container>
+    );
 }
 
 export default Register;

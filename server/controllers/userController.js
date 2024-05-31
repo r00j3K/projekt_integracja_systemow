@@ -28,7 +28,8 @@ const login = async (req, res) => {
         // Wygenerowanie JWT tokena, niezbędnego do autoryzacji użytkownika
         let token = await jwt.sign({id: user.id, email: user.email}, process.env.SECRET_KEY, {expiresIn: '1h'});
 
-        res.cookie('jwt', token, { httpOnly: true });
+        //nie moze byc httpOnly true, bo wtedy JS na froncie nie widzi cookie
+        res.cookie('jwt', token);
 
         res.cookie('id', User.id, { httpOnly: true });
 
@@ -67,21 +68,21 @@ const logout = async (req, res) => {
 const tokenValidation = async (req, res, next) => {
     //pobranie tokenu z cookies
     const token = req.cookies.jwt;
-    //console.log(token)
+    console.log(token)
 
     //walidacja dostepu na podstawie tokenu i SECRET_KEY tworzonego przy uruchamianiu serwera
     if(!token){
         res.status(400).send("Brak dostępu");
     }else{
         try{
-
-            const result= await jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {});
+            const result= await jwt.verify(token, process.env.SECRET_KEY);
             next();
-        }catch{
+        }catch(err){
             res.status(401).send("Nieprawidłowy lub nieważny token");
         }
     }
 }
+
 
 const addUser = async (req, res) => {
     try {

@@ -9,7 +9,7 @@ userRouter.put("/updateUser/:id", userController.updateUser);
 userRouter.delete("/deleteUser/:id", userController.deleteUser);
 userRouter.post('/login', userController.login);
 userRouter.get('/', userController.tokenValidation ,userController.homePage);
-userRouter.post('/logout', userController.tokenValidation, userController.logout)
+userRouter.post('/logout', userController.logout)
 
 
 module.exports = userRouter;

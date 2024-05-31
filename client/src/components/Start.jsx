@@ -1,21 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Container, Row, Col, Button, Image } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const Start = () => {
     return (
-        <div class="d-flex justify-content-center align-items-center min-vh-100">
-            <div>
-                <Link to="/login">
-                    <button class="btn btn-primary btn-lg mx-2">Logowanie</button>
-                </Link>
-            </div>
-            <div>
-                <Link to="/register">
-                    <button class="btn btn-outline-primary btn-lg mx-2" >Rejestracja</button>
-                </Link>
-            </div>
-
-        </div>
+        <Container className="d-flex flex-column justify-content-between align-items-center min-vh-100">
+            <Row className="mb-4 mt-4">
+                <Col className="text-center">
+                    <Image src={require('./src/tag_logo.png')} width={250} fluid />
+                </Col>
+            </Row>
+            <Row>
+                <Col className="d-flex flex-column align-items-center">
+                    <Link to="/login">
+                        <Button variant="primary" size="lg" className="my-2">Logowanie</Button>
+                    </Link>
+                    <Link to="/register">
+                        <Button variant="outline-primary" size="lg" className="my-2">Rejestracja</Button>
+                    </Link>
+                </Col>
+            </Row>
+            <Row className="mt-4">
+                <Col className="text-center">
+                    <p>Created by Dawid Rutkowski & Adrian Rojek</p>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
-export default Start
+export default Start;
