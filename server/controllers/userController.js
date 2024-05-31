@@ -15,22 +15,22 @@ const login = async (req, res) => {
         let user = await User.findOne({where: {email: req.body.email}});
 
         if (!user) {
-            return res.status(400).send({ message: 'Nie ma takiego usera' });
+            return res.status(400).send({ message: 'Nie istnieje konto użytkownika o podanym e-mailu' });
         }
 
         // Sprawdzenie hasła
         let passOk = await bcrypt.compare(req.body.password, user.password);
 
         if (!passOk) {
-            return res.status(400).send({ message: 'Złe hasło' });
+            return res.status(400).send({ message: 'Błędne hasło' });
         }
 
         // Wygenerowanie JWT tokena, niezbędnego do autoryzacji użytkownika
         let token = await jwt.sign({id: user.id, email: user.email}, process.env.SECRET_KEY, {expiresIn: '1h'});
 
-        res.cookie('jwt', token, {
-            httpOnly: true
-        });
+        res.cookie('jwt', token, { httpOnly: true });
+
+        res.cookie('id', User.id, { httpOnly: true });
 
         // Generowanie Wykop Bearer tokenu do późniejszego pobierania artykułów
         const response = await axios.post('https://wykop.pl/api/v3/auth', {
@@ -57,27 +57,28 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     //usuniecie jwt tokenu i wykopTokenu z cookies
-    res.clearCookie('jwt')
-    res.clearCookie('wykopToken')
-    res.send("Wylogowano")
+    res.clearCookie('jwt');
+    res.clearCookie('wykopToken');
+    res.clearCookie('id');
+    res.send("Wylogowano");
     //po stworzeniu fronta dodac przekierowanie do strony logowania
 }
 
 const tokenValidation = async (req, res, next) => {
     //pobranie tokenu z cookies
-    const token = req.cookies.jwt
+    const token = req.cookies.jwt;
     //console.log(token)
 
     //walidacja dostepu na podstawie tokenu i SECRET_KEY tworzonego przy uruchamianiu serwera
     if(!token){
-        res.status(400).send("Brak dostepu")
+        res.status(400).send("Brak dostępu");
     }else{
         try{
 
-            const result= await jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {})
-            next()
+            const result= await jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {});
+            next();
         }catch{
-            res.status(401).send("Nie znaleziono")
+            res.status(401).send("Nieprawidłowy lub nieważny token");
         }
     }
 }
@@ -93,7 +94,7 @@ const addUser = async (req, res) => {
             return res.status(400).send({ message: 'Email already in use' });
         }
         if( date_of_birth < 1950 || date_of_birth > 2024 ){
-            return res.status(400).send({ message: 'Nieprawidłowa data urodzenia' })
+            return res.status(400).send({ message: 'Nieprawidłowa data urodzenia' });
         }
         // Zaszyfrowanie hasła
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -153,4 +154,4 @@ module.exports = {
     homePage,
     tokenValidation,
     logout
-}
+};
