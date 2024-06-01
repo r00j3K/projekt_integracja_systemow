@@ -13,7 +13,7 @@ async function addArticle(req,res){
         res.send(article);
     }
     catch(err){
-        res.send("Błąd: "+err)
+        res.send({message: err})
     }
 }
 

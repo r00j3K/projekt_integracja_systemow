@@ -4,6 +4,7 @@ import Start from './components/Start';
 import Login from './components/Login';
 import Home from './components/Home';
 import Register from './components/Register';
+import CreateArticle from './components/CreateArticle';
 import  { ProtectedRoute } from './ProtectedRoute';
 import './App.css';
 
@@ -15,6 +16,7 @@ function App() {
                 <Route exact path="/login"  element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login />} />} />
                 <Route exact path="/home" element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login/>}/>} />
                 <Route exact path="/register" element={<ProtectedRoute elementIfAuthenticated={<Home/>} elementIfUnauthenticated={<Register/>}/>} />
+                <Route exact path="/create_article" element={<CreateArticle/>} />
             </Routes>
         </BrowserRouter>
     );
