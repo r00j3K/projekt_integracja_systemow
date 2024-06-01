@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const saltRounds = 10;
 const axios = require('axios');
+const sequelize = require('../db');
 
 const homePage = async (req, res) => {
     res.send("homepage")
@@ -83,44 +84,80 @@ const tokenValidation = async (req, res, next) => {
     }
 }
 
+//
+// const addUser = async (req, res) => {
+//     try {
+//         // Pobranie informacji o użytkowniku
+//         const { name, surname, date_of_birth, email, password } = req.body;
+//
+//         // Sprawdzenie, czy użytkownik z podanym e-mailem już istnieje
+//         const existingUser = await User.findOne({ where: { email } });
+//         if (existingUser) {
+//             return res.status(400).send({ message: 'Email already in use' });
+//         }
+//         if( date_of_birth < 1950 || date_of_birth > 2024 ){
+//             return res.status(400).send({ message: 'Nieprawidłowa data urodzenia' });
+//         }
+//         // Zaszyfrowanie hasła
+//         const hashedPassword = await bcrypt.hash(password, saltRounds);
+//
+//         // Przygotowanie danych użytkownika
+//         let info = {
+//             email: email,
+//             password: hashedPassword,
+//             name: name,
+//             surname: surname,
+//             date_of_birth: date_of_birth
+//         }
+//
+//         //console.log(info.password);
+//
+//         // Wykorzystanie modelu User do dodania go do bazy danych
+//         const user = await User.create(info);
+//
+//         res.status(200).send(user);
+//         console.log(user);
+//     } catch (error) {
+//         res.status(500).send({ message: 'Error registering user', error: error.message });
+//         console.error(error);
+//     }
+// }
 
 const addUser = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-        // Pobranie informacji o użytkowniku
         const { name, surname, date_of_birth, email, password } = req.body;
 
-        // Sprawdzenie, czy użytkownik z podanym e-mailem już istnieje
-        const existingUser = await User.findOne({ where: { email } });
+        const existingUser = await User.findOne({ where: { email }, transaction: t });
         if (existingUser) {
+            await t.rollback();
             return res.status(400).send({ message: 'Email already in use' });
         }
-        if( date_of_birth < 1950 || date_of_birth > 2024 ){
+
+        if (date_of_birth < 1950 || date_of_birth > 2024) {
+            await t.rollback();
             return res.status(400).send({ message: 'Nieprawidłowa data urodzenia' });
         }
-        // Zaszyfrowanie hasła
+
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Przygotowanie danych użytkownika
         let info = {
             email: email,
             password: hashedPassword,
             name: name,
             surname: surname,
             date_of_birth: date_of_birth
-        }
+        };
 
-        //console.log(info.password);
+        const user = await User.create(info, { transaction: t });
 
-        // Wykorzystanie modelu User do dodania go do bazy danych
-        const user = await User.create(info);
-
+        await t.commit();
         res.status(200).send(user);
-        console.log(user);
     } catch (error) {
+        await t.rollback();
         res.status(500).send({ message: 'Error registering user', error: error.message });
-        console.error(error);
     }
-}
+};
 
 const getAllUsers = async (req, res) => {
     let users = await User.findAll();
