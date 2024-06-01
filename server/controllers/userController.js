@@ -5,10 +5,6 @@ const dotenv = require('dotenv').config()
 const saltRounds = 10;
 const axios = require('axios');
 
-const homePage = async (req, res) => {
-    res.send("homepage")
-}
-
 const login = async (req, res) => {
     try {
         // Znalezienie użytkownika o podanym emailu
@@ -30,8 +26,7 @@ const login = async (req, res) => {
 
         //nie moze byc httpOnly true, bo wtedy JS na froncie nie widzi cookie
         res.cookie('jwt', token);
-
-        res.cookie('id', User.id, { httpOnly: true });
+        res.cookie('id', user.id, { httpOnly: true });
 
         // Generowanie Wykop Bearer tokenu do późniejszego pobierania artykułów
         const response = await axios.post('https://wykop.pl/api/v3/auth', {
@@ -152,7 +147,6 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
-    homePage,
     tokenValidation,
     logout
 };

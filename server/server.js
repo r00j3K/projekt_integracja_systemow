@@ -5,9 +5,11 @@ const app = express();
 const userController = require('./controllers/userController');
 const userRouter = require('./routes/userRouter');
 const articleRouter = require('./routes/articleRouter');
+const userArticleRouter = require('./routes/userArticleRouter');
 const db = require('./db');
 const User = require('./models/userModel');
 const Article = require('./models/articleModel');
+const userArticle = require('./models/userArticleModel');
 const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 8080;
@@ -21,6 +23,7 @@ const initApp = async () => {
 
         await User.sync({ alter: true });
         await Article.sync({ alter: true });
+        await userArticle.sync({ alter: true });
 
         app.use(cors({
             origin: true,
@@ -34,6 +37,7 @@ const initApp = async () => {
         app.use(cookieParser());
         app.use('/api/users', userRouter);
         app.use('/api/articles', userController.tokenValidation, articleRouter);
+        app.use('/api/user_articles', userArticleRouter);
 
         // Generowanie secret key
         process.env.SECRET_KEY = require('crypto').randomBytes(64).toString('hex');
