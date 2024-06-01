@@ -16,7 +16,7 @@ function App() {
                 <Route exact path="/login"  element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login />} />} />
                 <Route exact path="/home" element={<ProtectedRoute elementIfAuthenticated={<Home />} elementIfUnauthenticated={<Login/>}/>} />
                 <Route exact path="/register" element={<ProtectedRoute elementIfAuthenticated={<Home/>} elementIfUnauthenticated={<Register/>}/>} />
-                <Route exact path="/create_article" element={<CreateArticle/>} />
+                <Route exact path="/create_article" element={<ProtectedRoute elementIfAuthenticated={<CreateArticle/>} elementIfUnauthenticated={<Login/>}/>} />
             </Routes>
         </BrowserRouter>
     );

@@ -30,11 +30,12 @@ const userArticle = sequelize.define('userArticle', {
     }
 });
 
-User.hasMany(userArticle, { foreignKey: 'user_id' });
-userArticle.belongsTo(User, {
+User.hasMany(userArticle, {
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE' });
+userArticle.belongsTo(User, {
+    foreignKey: 'user_id',
 });
 
 
