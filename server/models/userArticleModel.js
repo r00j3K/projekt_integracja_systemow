@@ -10,7 +10,7 @@ const userArticle = sequelize.define('userArticle', {
      type: DataTypes.INTEGER
    },
     user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: User,
@@ -30,7 +30,11 @@ const userArticle = sequelize.define('userArticle', {
     }
 });
 
-User.hasMany(userArticle, { foreignKey: 'user_id' });
+User.hasMany(userArticle, {
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
 userArticle.belongsTo(User, {
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
