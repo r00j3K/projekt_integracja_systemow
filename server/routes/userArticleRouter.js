@@ -3,7 +3,8 @@ const userController = require('../controllers/userController');
 const express = require("express");
 const userArticleRouter = express.Router();
 
-userArticleRouter.post('/create', userController.tokenValidation, userArticleController.addArticle);
-userArticleRouter.get('/get_articles', userController.tokenValidation, userArticleController.getUserArticles)
-userArticleRouter.delete('/delete_article', userController.tokenValidation, userArticleController.deleteArticle);
+userArticleRouter.post('/create', userArticleController.addArticle);
+userArticleRouter.get('/get_articles', userArticleController.getUserArticles)
+userArticleRouter.delete('/delete_article', userArticleController.deleteArticle);
+userArticleRouter.post('/update_article', userArticleController.updateArticle);
 module.exports = userArticleRouter;

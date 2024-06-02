@@ -28,10 +28,6 @@ const UserArticles = () => {
         return <div>Pobieranie artykułów...</div>;
     }
 
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     return (
         <div className="container-fluid w-75">
             <NavigationBar/>
@@ -41,6 +37,7 @@ const UserArticles = () => {
             ) : (
                 <h2 className="text-center text-danger">Brak artykułów</h2>
             )}
+            {error && <div>{error}</div>}
         </div>
     );
 };

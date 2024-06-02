@@ -16,10 +16,13 @@ async function getArticles(req, res) {
             Authorization: `Bearer ` + req.cookies.wykopToken
         }
     };
+
     let startDate = new Date(req.body.start_date);
     const endDate = new Date(req.body.end_date);
     let allArticles = [];
-
+    if((startDate > endDate) || endDate > Date.now()){
+        res.status(400).send({message: "Podano nieprawidłowy zakres dat"});
+    }
     try {
         while (startDate <= endDate) {
             const tempYear = startDate.getFullYear();

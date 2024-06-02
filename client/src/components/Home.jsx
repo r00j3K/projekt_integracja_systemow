@@ -38,7 +38,7 @@ const Home = () => {
                 fetchTopTags();
             }
         } catch (err) {
-            console.log(err);
+            set_article_err(err.response.data.message);
         }
     };
 

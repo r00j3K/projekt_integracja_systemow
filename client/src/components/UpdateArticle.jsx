@@ -1,35 +1,38 @@
-import axios from "axios";
-import ArticleForm from "./ArticleForm";
+import {useLocation} from "react-router-dom";
+import {useState} from "react";
 import NavigationBar from "./NavigationBar";
-import React, {useState} from "react";
+import ArticleForm from "./ArticleForm";
+import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
-const CreateArticle = () => {
+const UpdateArticle = () => {
+    const navigate = useNavigate();
+
+    const location = useLocation();
+    const article_id = location.state.id;
+
     const [error, setError] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState({ value: '', label: 'Wybierz kategorie...' });
 
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-            console.log("tworzenie");
-            const response = await axios.post('http://localhost:8080/api/user_articles/create', { title, description, category }, { withCredentials: true });
-            console.log(response);
-            setError('');
+            await axios.post('http://localhost:8080/api/user_articles/update_article', {article_id, title, description, category}, {withCredentials: true });
             navigate('/your_articles');
-        } catch (err) {
+        }
+        catch (err) {
             setError(err.response.data.message);
         }
-    };
+    }
+
     return (
         <div>
-            <NavigationBar />
-            <h1 className="mb-4 text-center  my-4">Utwórz artykuł</h1>
+            <NavigationBar/>
+            <h1>Edytuj artykuł</h1>
             <ArticleForm
-                article_id={-1}
+                article_id={article_id}
                 handleSubmit={handleSubmit}
                 title={title}
                 setTitle={setTitle}
@@ -41,7 +44,8 @@ const CreateArticle = () => {
                 setError={setError}
             />;
         </div>
-    )
+
+    );
 }
 
-export default CreateArticle;
+export default UpdateArticle;

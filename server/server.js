@@ -37,7 +37,7 @@ const initApp = async () => {
         app.use(cookieParser());
         app.use('/api/users', userRouter);
         app.use('/api/articles', userController.tokenValidation, articleRouter);
-        app.use('/api/user_articles', userArticleRouter);
+        app.use('/api/user_articles',userController.tokenValidation, userArticleRouter);
 
         // Generowanie secret key
         process.env.SECRET_KEY = require('crypto').randomBytes(64).toString('hex');

@@ -48,7 +48,33 @@ async function deleteArticle(req,res){
     }
 }
 
+async function updateArticle(req, res) {
+    try {
+        const {article_id, title, description, category} = req.body;
+        console.log("ID: "+article_id);
+        console.log("Title: "+title);
+        console.log("Description: "+description);
+        console.log("Category: "+category);
+        if( title.length === 0 || description.length === 0 || category.value === '') {
+            return res.status(400).send({message:"Wszystkie pola muszą zostać wypełnione!"});
+        }
+        const response = await userArticle.update(
+            {title: title, description: description, category: category.value},
+            {where:
+                    {id: article_id}
+            }
+        );
+        console.log("odpowiedz")
+        console.log(response);
+        res.end();
+    }
+    catch(err){
+        res.send({message: err})
+    }
+}
+
 module.exports = {
+    updateArticle,
     addArticle,
     getUserArticles,
     deleteArticle
