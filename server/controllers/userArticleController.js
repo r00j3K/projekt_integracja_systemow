@@ -24,14 +24,32 @@ async function addArticle(req,res){
 
 async function getUserArticles(req,res){
     try{
-        const data = UserArticles.findAll({where: {user_id: req.cookies.id}});
-        console.log(data);
+        const data = await userArticle.findAll({where: {user_id: req.cookies.id}});
+
+        //utworzenie tablicy z obiektu przesłanego w resposnie
+        // const articles = Object.keys(data).map((key) => {
+        //     return data[key];
+        // });
+
+        res.send(data);
     }
     catch(err){
         res.send({message: err})
     }
 }
 
+async function deleteArticle(req,res){
+    try{
+        console.log(req.cookies.id);
+        await userArticle.destroy({where: {id: req.body.id}});
+    }
+    catch(err){
+        res.send({message: err});
+    }
+}
+
 module.exports = {
-    addArticle
+    addArticle,
+    getUserArticles,
+    deleteArticle
 }

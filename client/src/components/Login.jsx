@@ -22,8 +22,7 @@ const Login = () => {
             //ciasteczka z tokenami ustawiamy na serwerze
             //Cookies.set('jwt', response.data.jwt, { expires: 1 });
             //Cookies.set('wykopToken', response.data.wykopToken, { expires: 1 });
-
-            navigate('/home');
+            window.location.reload();
         } catch (err){
             setError(err.response.data.message);
         }

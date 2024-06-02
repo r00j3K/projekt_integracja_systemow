@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {useNavigate} from "react-router-dom";
+import NavigationBar from "./NavigationBar";
 
 const CreateArticle = () => {
+    const navigate = useNavigate();
+
     const categories = [
         { value: "świat", label: "Świat" },
         { value: "polska", label: "Polska" },
@@ -25,7 +29,7 @@ const CreateArticle = () => {
             const response = await axios.post('http://localhost:8080/api/user_articles/create', { title, description, category }, { withCredentials: true });
             console.log(response);
             setError('');
-            // Transition to the user's articles page
+            navigate('/your_articles');
         } catch (err) {
             setError(err.response.data.message);
         }
@@ -33,7 +37,8 @@ const CreateArticle = () => {
 
     return (
         <div className="container mt-5">
-            <h1 className="mb-4 text-center">Utwórz artykuł</h1>
+            <NavigationBar />
+            <h1 className="mb-4 text-center  my-4">Utwórz artykuł</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group row mb-3">
                     <label htmlFor="title" className="col-sm-2 col-form-label">Tytuł</label>
