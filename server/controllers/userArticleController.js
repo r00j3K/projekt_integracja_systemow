@@ -40,8 +40,8 @@ async function getUserArticles(req,res){
 
 async function deleteArticle(req,res){
     try{
-        console.log(req.cookies.id);
-        await userArticle.destroy({where: {id: req.body.id}});
+        const res = await userArticle.destroy({where: {id: req.body.id}});
+        res.end();
     }
     catch(err){
         res.send({message: err});

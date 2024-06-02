@@ -1,13 +1,14 @@
 import Stack from 'react-bootstrap/Stack';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 export const Article = ({article, article_id}) => {
+    const navigate = useNavigate();
     const id = article.id;
     const handleDelete = async (e) => {
         e.preventDefault();
         try {
-            const resposne = await axios.delete('http://localhost:8080/api/user_articles/delete_article', {id}, {withCredentials: true});
-            console.log(resposne);
-            //window.location.reload();
+            await axios.delete('http://localhost:8080/api/user_articles/delete_article', {data: {id: id}, withCredentials: true});
+            window.location.reload();
         }
         catch(err){
             console.log(err);

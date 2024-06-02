@@ -5,5 +5,5 @@ const userArticleRouter = express.Router();
 
 userArticleRouter.post('/create', userController.tokenValidation, userArticleController.addArticle);
 userArticleRouter.get('/get_articles', userController.tokenValidation, userArticleController.getUserArticles)
-userArticleRouter.delete('/delete_article', userArticleController.deleteArticle);
+userArticleRouter.delete('/delete_article', userController.tokenValidation, userArticleController.deleteArticle);
 module.exports = userArticleRouter;
