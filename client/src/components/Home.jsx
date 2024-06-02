@@ -6,6 +6,7 @@ import { Chart as ChartJS, LineElement, PointElement, LinearScale, Title, Catego
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from "./NavigationBar";
+import { handleLogout } from "./scripts/logout";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale);
 
@@ -20,6 +21,8 @@ const Home = () => {
     const [selected_tag_err, set_selected_tag_err] = useState("");
     const [article_err, set_article_err] = useState("");
     const navigate = useNavigate();
+
+
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -38,7 +41,11 @@ const Home = () => {
                 fetchTopTags();
             }
         } catch (err) {
-            set_article_err(err.response.data.message);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                set_article_err(err.response.data.message);
+            }
         }
     };
 
@@ -57,7 +64,11 @@ const Home = () => {
                 }, {});
             set_top_ten_tags(top10TagsArray);
         } catch (err) {
-            console.log(err);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+            }
         }
     };
 
@@ -96,7 +107,11 @@ const Home = () => {
                 set_selected_tag_err("Wystąpił błąd podczas pobierania danych");
             }
         } catch (err) {
-            console.log(err);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+            }
         }
     };
 
@@ -117,7 +132,11 @@ const Home = () => {
             link.click();
             link.remove();
         } catch (err) {
-            console.log(err);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+            }
         }
 
     };

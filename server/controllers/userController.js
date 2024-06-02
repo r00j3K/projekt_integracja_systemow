@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const saltRounds = 10;
 const axios = require('axios');
+const sequelize = require('../db');
 
 const login = async (req, res) => {
     try {
@@ -44,7 +45,7 @@ const login = async (req, res) => {
             httpOnly: true
         });
 
-        res.send("Login successful " + wykopToken);
+        res.send("Logowanie powiodlo sie ");
     } catch (err) {
         res.status(500).send({ message: "Błąd: " + err });
     }
@@ -78,20 +79,45 @@ const tokenValidation = async (req, res, next) => {
     }
 }
 
+const frontTokenValidation = async (req, res, next) => {
+    //pobranie tokenu z cookies
+    const token = req.cookies.jwt;
+    console.log(token)
+
+    //walidacja dostepu na podstawie tokenu i SECRET_KEY tworzonego przy uruchamianiu serwera
+    if(!token){
+        res.status(400).send("Brak dostępu");
+    }else{
+        try{
+            const result= await jwt.verify(token, process.env.SECRET_KEY);
+            res.status(200).send(result);
+        }catch(err){
+            res.status(401).send("Nieprawidłowy lub nieważny token");
+        }
+    }
+}
+
+
 
 const addUser = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
+
         // Pobranie informacji o użytkowniku
         const { name, surname, date_of_birth, email, password } = req.body;
 
         // Sprawdzenie, czy użytkownik z podanym e-mailem już istnieje
-        const existingUser = await User.findOne({ where: { email } });
+        const existingUser = await User.findOne({ where: { email }, transaction: t });
         if (existingUser) {
-            return res.status(400).send({ message: 'Email already in use' });
+            await t.rollback();
+            return res.status(400).send({ message: 'Email jest juz w uzyciu' });
         }
-        if( date_of_birth < 1950 || date_of_birth > 2024 ){
+
+        if (date_of_birth < 1950 || date_of_birth > 2024) {
+            await t.rollback();
             return res.status(400).send({ message: 'Nieprawidłowa data urodzenia' });
         }
+
         // Zaszyfrowanie hasła
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -102,21 +128,18 @@ const addUser = async (req, res) => {
             name: name,
             surname: surname,
             date_of_birth: date_of_birth
-        }
-
-        //console.log(info.password);
+        };
 
         // Wykorzystanie modelu User do dodania go do bazy danych
-        const user = await User.create(info);
+        const user = await User.create(info, { transaction: t });
 
+        await t.commit();
         res.status(200).send(user);
-        console.log(user);
     } catch (error) {
-        res.status(500).send({ message: 'Error registering user', error: error.message });
-        console.error(error);
+        await t.rollback();
+        res.status(500).send({ message: 'Blad rejestracji uzytkownika', error: error.message });
     }
-}
-
+};
 const getAllUsers = async (req, res) => {
     let users = await User.findAll();
     res.status(200).send(users);
@@ -128,17 +151,34 @@ const getOneUser = async (req, res) => {
     res.status(200).send(info);
 }
 
+
 const updateUser = async (req, res) => {
-    let id = req.params.id;
-    const user = await User.update(req.body, {where: {id: id}});
-    res.status(200).send(user);
-}
+    const t = await sequelize.transaction();
+    try {
+        let id = req.params.id;
+        const user = await User.update(req.body, { where: { id: id }, transaction: t });
+        await t.commit();
+        res.status(200).send(user);
+    } catch (error) {
+        await t.rollback();
+        res.status(500).send({ message: 'Blad edycji uzytkownika', error: error.message });
+    }
+};
 
 const deleteUser = async (req, res) => {
-    let id = req.params.id;
-    await User.destroy({ where: {id: id}});
-    res.status(200).send("user is deleted");
-}
+    const t = await sequelize.transaction();
+    try {
+        let id = req.params.id;
+        await User.destroy({ where: { id: id }, transaction: t });
+        await t.commit();
+        res.status(200).send("user is deleted");
+    } catch (error) {
+        await t.rollback();
+        res.status(500).send({ message: 'Error deleting user', error: error.message });
+    }
+};
+
+
 
 module.exports = {
     addUser,
@@ -148,5 +188,6 @@ module.exports = {
     deleteUser,
     login,
     tokenValidation,
-    logout
+    logout,
+    frontTokenValidation
 };

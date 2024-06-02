@@ -7,7 +7,7 @@ import Register from './components/Register';
 import CreateArticle from './components/CreateArticle';
 import UserArticles from './components/UserArticles';
 import UpdateArticle from './components/UpdateArticle';
-import  { ProtectedRoute } from './ProtectedRoute';
+import { ProtectedRoute }  from './ProtectedRoute';
 import './App.css';
 
 function App() {

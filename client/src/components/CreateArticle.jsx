@@ -3,6 +3,7 @@ import ArticleForm from "./ArticleForm";
 import NavigationBar from "./NavigationBar";
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {handleLogout} from "./scripts/logout";
 
 const CreateArticle = () => {
     const [error, setError] = useState('');
@@ -21,7 +22,11 @@ const CreateArticle = () => {
             setError('');
             navigate('/your_articles');
         } catch (err) {
-            setError(err.response.data.message);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                setError(err.response.data.message);
+            }
         }
     };
     return (

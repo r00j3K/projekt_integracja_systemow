@@ -9,6 +9,7 @@ userRouter.put("/updateUser/:id", userController.updateUser);
 userRouter.delete("/deleteUser/:id", userController.deleteUser);
 userRouter.post('/login', userController.login);
 userRouter.post('/logout', userController.logout)
+userRouter.post('/validation', userController.frontTokenValidation);
 
 
 module.exports = userRouter;
