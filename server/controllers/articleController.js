@@ -143,6 +143,7 @@ async function googleData(req, res) {
 
 const fs = require('fs');
 const path = require('path');
+
 async function exportData(req, res) {
     const t = await sequelize.transaction();
     try {
@@ -186,21 +187,21 @@ async function exportData(req, res) {
 }
 
 
-async function downloadData(req, res) {
-    const t = await sequelize.transaction();
-    try {
-        const data = req.body.articles_data;
-        const filePath = path.join(__dirname, '../articles.json');
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-
-        await t.commit();
-        res.download(filePath, 'articles.json');
-    } catch (err) {
-        await t.rollback();
-        console.log(err);
-        res.status(500).send("Błąd: " + err.message);
-    }
-}
+// async function downloadData(req, res) {
+//     const t = await sequelize.transaction();
+//     try {
+//         const data = req.body.articles_data;
+//         const filePath = path.join(__dirname, '../articles.json');
+//         await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+//
+//         await t.commit();
+//         res.download(filePath, 'articles.json');
+//     } catch (err) {
+//         await t.rollback();
+//         console.log(err);
+//         res.status(500).send("Błąd: " + err.message);
+//     }
+// }
 
 
 module.exports = {
@@ -210,5 +211,5 @@ module.exports = {
     topTags,
     exportData,
     googleData,
-    downloadData
+    //downloadData,
 };

@@ -28,6 +28,12 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    role: {
+        type: DataTypes.ENUM,
+        values: ['download', 'non-download'],
+        allowNull: false,
+        defaultValue: 'download'
     }
 });
 
