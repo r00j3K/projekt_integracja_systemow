@@ -13,8 +13,8 @@ services:
       - backend
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 7s
-      timeout: 7s
+      interval: 8s
+      timeout: 8s
       retries: 4
 
   phpmyadmin:
