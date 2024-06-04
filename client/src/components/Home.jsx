@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import NavigationBar from "./NavigationBar";
+import { handleLogout } from "./scripts/logout";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale);
 
@@ -18,7 +20,10 @@ const Home = () => {
     const [tagData, set_tagData] = useState(null);
     const [selected_tag_err, set_selected_tag_err] = useState("");
     const [article_err, set_article_err] = useState("");
+    const [download_err, set_download_err] = useState("");
     const navigate = useNavigate();
+
+
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -36,8 +41,12 @@ const Home = () => {
                 set_articles(response.data);
                 fetchTopTags();
             }
-        } catch (error) {
-            await handleLogout();
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                set_article_err(err.response.data.message);
+            }
         }
     };
 
@@ -55,8 +64,12 @@ const Home = () => {
                     return acc;
                 }, {});
             set_top_ten_tags(top10TagsArray);
-        } catch (error) {
-            await handleLogout();
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+            }
         }
     };
 
@@ -94,8 +107,13 @@ const Home = () => {
                 set_tagData(null);
                 set_selected_tag_err("Wystąpił błąd podczas pobierania danych");
             }
-        } catch (error) {
-            await handleLogout();
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+                set_download_err(err.response.data.message);
+            }
         }
     };
 
@@ -115,26 +133,20 @@ const Home = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            set_download_err("");
         } catch (err) {
-            await handleLogout();
-        }
-
-    };
-
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8080/api/users/logout', {}, { withCredentials: true });
-            navigate('/login');
-        } catch (err) {
-            console.log(`Błąd podczas wylogowywania: ${err}`);
+            if (err.response && err.response.status === 401) {
+                handleLogout();
+            } else {
+                console.log(err);
+                set_download_err(err.response.data.message || "Nie posiadasz uprawnień do pobierania");
+            }
         }
     };
 
     return (
         <div className="container-fluid">
-            <nav className="navbar navbar-light" style={{ backgroundColor: '#e3f2fd' }}>
-                <button onClick={handleLogout} className="btn btn-outline-danger">Wyloguj</button>
-            </nav>
+            <NavigationBar/>
 
             <h1 className="text-center my-4">Wyszukaj trendy z danego okresu</h1>
             <form method="POST" onSubmit={handleSearch} className="mb-4 p-3 border rounded">
@@ -169,19 +181,20 @@ const Home = () => {
                 <div className="col-md-6">
                     {articles.length > 0 && article_err === "" ? (
                         <div className="border rounded p-3">
-                            <h2>Articles</h2>
+                            <h2>Artykuły</h2>
                             <ul className="list-group">
                                 {articles.map((article, index) => (
                                     <li key={index} className="list-group-item">
                                         <h3>{article.title}</h3>
                                         <p>{article.description}</p>
-                                        <p><strong>Tags:</strong> {article.tags.join(', ')}</p>
-                                        <p><strong>Votes:</strong> {article.votes}</p>
-                                        <p><strong>Created at:</strong> {new Date(article.created_at).toLocaleDateString()}</p>
+                                        <p><strong>Tagi:</strong> {article.tags.join(', ')}</p>
+                                        <p><strong>Głosy:</strong> {article.votes}</p>
+                                        <p><strong>Data utworzenia:</strong> {new Date(article.created_at).toLocaleDateString()}</p>
                                     </li>
                                 ))}
                             </ul>
                             <button onClick={handleDownload} className="btn btn-secondary my-5">Pobierz dane artykułów</button>
+                            {download_err && <h2>{download_err}</h2>}
                         </div>
                     ) : (
                         <h2>{article_err}</h2>

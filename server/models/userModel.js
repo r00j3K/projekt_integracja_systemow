@@ -2,6 +2,12 @@ const {DataTypes} = require('sequelize');
 const sequelize = require('../db');
 
 const User = sequelize.define('User', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
     name:{
         type: DataTypes.STRING,
         allowNull: false,
@@ -22,6 +28,12 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    role: {
+        type: DataTypes.ENUM,
+        values: ['download', 'non-download'],
+        allowNull: false,
+        defaultValue: 'download'
     }
 });
 

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {Button} from "react-bootstrap";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,10 +22,9 @@ const Login = () => {
             //ciasteczka z tokenami ustawiamy na serwerze
             //Cookies.set('jwt', response.data.jwt, { expires: 1 });
             //Cookies.set('wykopToken', response.data.wykopToken, { expires: 1 });
-
-            navigate('/home');
+            window.location.reload();
         } catch (err){
-            setError(err.response.data.message || "Błąd serwera")
+            setError(err.response.data.message);
         }
     };
 
@@ -56,10 +56,14 @@ const Login = () => {
                         />
                         <label className="form-label" htmlFor="form2Example2">Hasło</label>
                     </div>
-
-                    <button type="submit" className="btn btn-primary btn-block mb-4">Zaloguj</button>
+                    <div className="text-center">
+                        <Button type="submit" variant="primary" className="mx-2 my-2">Zaloguj się</Button>
+                        <Link to="/register">
+                            <Button variant="secondary">Rejestracja</Button>
+                        </Link>
+                    </div>
                 </form>
-                {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                {error && <div className="alert alert-danger text-center" role="alert">{error}</div>}
             </div>
         </div>
     );
