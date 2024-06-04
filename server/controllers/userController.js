@@ -68,7 +68,7 @@ const tokenValidation = async (req, res, next) => {
 
     //walidacja dostepu na podstawie tokenu i SECRET_KEY tworzonego przy uruchamianiu serwera
     if(!token){
-        res.status(400).send("Brak dostępu");
+        res.status(400).send("Brak dostępu, błędny token");
     }else{
         try{
             const result= await jwt.verify(token, process.env.SECRET_KEY);
@@ -105,12 +105,13 @@ const addUser = async (req, res) => {
 
         // Pobranie informacji o użytkowniku
         const { name, surname, date_of_birth, email, password } = req.body;
+        const role = req.body.role.value;
 
         // Sprawdzenie, czy użytkownik z podanym e-mailem już istnieje
         const existingUser = await User.findOne({ where: { email }, transaction: t });
         if (existingUser) {
             await t.rollback();
-            return res.status(400).send({ message: 'Email jest juz w uzyciu' });
+            return res.status(400).send({ message: 'Email jest juz w użyciu' });
         }
 
         if (date_of_birth < 1950 || date_of_birth > 2024) {
@@ -127,7 +128,8 @@ const addUser = async (req, res) => {
             password: hashedPassword,
             name: name,
             surname: surname,
-            date_of_birth: date_of_birth
+            date_of_birth: date_of_birth,
+            role: role
         };
 
         // Wykorzystanie modelu User do dodania go do bazy danych
@@ -135,9 +137,9 @@ const addUser = async (req, res) => {
 
         await t.commit();
         res.status(200).send(user);
-    } catch (error) {
+    } catch     (error) {
         await t.rollback();
-        res.status(500).send({ message: 'Blad rejestracji uzytkownika', error: error.message });
+        res.status(500).send({ message: 'Bład rejestracji uzytkownika', error: error.message });
     }
 };
 const getAllUsers = async (req, res) => {
@@ -161,7 +163,7 @@ const updateUser = async (req, res) => {
         res.status(200).send(user);
     } catch (error) {
         await t.rollback();
-        res.status(500).send({ message: 'Blad edycji uzytkownika', error: error.message });
+        res.status(500).send({ message: 'Błąd edycji uźytkownika', error: error.message });
     }
 };
 
@@ -178,6 +180,24 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const downloadVerification = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { id: req.cookies.id } });
+        if (user) {
+            if (user.role === 'download') {
+                console.log("Eligible for downloading");
+                next();
+            } else {
+                res.status(400).json({ message: 'Nie masz uprawnień do pobierania plików' });
+            }
+        } else {
+            res.status(404).send({ message: 'Nie znaleziono użytkownika' });
+        }
+    } catch (err) {
+        res.status(500).send({ message: 'Błąd serwera', error: err.message });
+    }
+};
+
 
 
 module.exports = {
@@ -189,5 +209,6 @@ module.exports = {
     login,
     tokenValidation,
     logout,
-    frontTokenValidation
+    frontTokenValidation,
+    downloadVerification
 };

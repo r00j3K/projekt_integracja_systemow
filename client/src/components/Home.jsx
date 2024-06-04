@@ -20,6 +20,7 @@ const Home = () => {
     const [tagData, set_tagData] = useState(null);
     const [selected_tag_err, set_selected_tag_err] = useState("");
     const [article_err, set_article_err] = useState("");
+    const [download_err, set_download_err] = useState("");
     const navigate = useNavigate();
 
 
@@ -111,6 +112,7 @@ const Home = () => {
                 handleLogout();
             } else {
                 console.log(err);
+                set_download_err(err.response.data.message);
             }
         }
     };
@@ -131,14 +133,15 @@ const Home = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            set_download_err("");
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 handleLogout();
             } else {
                 console.log(err);
+                set_download_err(err.response.data.message || "Nie posiadasz uprawnień do pobierania");
             }
         }
-
     };
 
     return (
@@ -191,6 +194,7 @@ const Home = () => {
                                 ))}
                             </ul>
                             <button onClick={handleDownload} className="btn btn-secondary my-5">Pobierz dane artykułów</button>
+                            {download_err && <h2>{download_err}</h2>}
                         </div>
                     ) : (
                         <h2>{article_err}</h2>
